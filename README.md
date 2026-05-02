@@ -15,3 +15,51 @@ Smart Motorcycle Security System designed to provide robust, low-power protectio
 
 - Ride Mode: Automatically disables motion sensing when the ignition key is detected (Pin D3), preventing false alarms while riding.
 
+# System States
+
+- DISARMED: Normal operation; monitoring for auto-arm or key insertion.
+- ARMED: Active monitoring of all sensors for motion or displacement.
+- WARNING (Stage 1): Soft vibration/beep alert for minor disturbances (< 3s).
+- ALARM (Stage 2): Loud siren and alternating tones for continuous motion (> 5s).
+- LOCKOUT: Triggered after 3 incidents; ignores sensors and requires a secret button sequence to reset.
+
+# Hardware Requirements
+
+- Microcontroller: Arduino Uno
+- Sensors: ADXL345 Accelerometer, NEO-6M GPS, Reed Switch
+- Communication: SIM800L GSM/GPRS Module
+- Timekeeping: DS3231 RTC Module
+- Actuators: 5V Relay Module (Kill-switch), Active Buzzer, Vibration Motor
+- Power: 18650 Li-ion Battery with TP4056 Charger and XL6009 Boost Converter
+
+# Pin Mapping
+- I2C Bus (ADXL345 Accelerometer & DS3231 RTC): Connect to A4 (SDA) and A5 (SCL) for data exchange and time stamping.
+- Active Buzzer: Connected to D9 (PWM) to provide multi-tone stage alarms.
+- Vibration Motor: Connected to D10 (PWM) for haptic feedback during Stage 2 alarms.
+- NEO-6M GPS Module: Uses A1 (RX) and A2 (TX) for satellite coordinate tracking via SoftwareSerial.
+- SIM800L GSM Module: Uses D7 (RX) and D8 (TX) for sending SMS alerts and receiving remote commands.
+- Ignition Kill-Switch (Relay): Controlled via A0 to engage the anti-theft lockout.
+- Reed Switch (Kickstand Sensor): Connected to D2 to detect physical movement when the stand is lifted.
+- Ride Key Input: Connected to D3; detects key insertion (LOW) to trigger Ride Mode.
+- Control Buttons: Three tactile buttons connected to D4, D5, and D6 for arming, disarming, and secret sequences.
+- Status LEDs: D11 (Red) for tens digit logs, D12 (Green) for ones digit logs, and D13 (Blue) for general status.
+
+# Usage & Configuration
+- Arm System: Press Button 2 three times (2-2-2).
+
+- Disarm System: Press Button 1 three times (1-1-1).
+
+- Unlock from Lockout: Enter the secret sequence: Button 1 -> Button 2 -> Button 3.
+
+- Clear Logs: Press Button 1, then Button 3 twice (1-3-3).
+
+# SMS Commands
+Send these commands from the MASTER_PHONE number:
+
+- STATUS: Request a full system report including current state and last known GPS location.
+- UNLOCK: Remotely disarm the system during a lockout.
+
+# Initial Setup
+- GSM Baud Rate: Ensure your GSM module is set to 9600 bps (use the provided setup utility if it is at the default 115200).
+- Phone Configuration: Replace the MASTER_PHONE constant in the code with your actual mobile number including the country code (e.g., +88017...).
+- GPS Fix: The GPS module requires a clear view of the sky to acquire a satellite lock.
